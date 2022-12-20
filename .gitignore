@@ -169,3 +169,28 @@ poetry.toml
 
 
 # End of https://www.toptal.com/developers/gitignore/api/python
+src/__pycache__/app.cpython-310.pyc
+src/__pycache__/app.cpython-38.pyc
+src/__pycache__/bottle_sslify.cpython-310.pyc
+src/__pycache__/bottle_sslify.cpython-38.pyc
+src/__pycache__/bottle_sslify.cpython-39.pyc
+src/__pycache__/check_validity.cpython-310.pyc
+src/__pycache__/check_validity.cpython-38.pyc
+src/__pycache__/codeislow.cpython-310.pyc
+src/__pycache__/codeislow.cpython-38.pyc
+src/__pycache__/code_references.cpython-310.pyc
+src/__pycache__/code_references.cpython-38.pyc
+src/__pycache__/code_references.cpython-39.pyc
+src/__pycache__/__init__.cpython-310.pyc
+src/__pycache__/__init__.cpython-38.pyc
+src/__pycache__/logs.cpython-310.pyc
+src/__pycache__/logs.cpython-38.pyc
+src/__pycache__/logs.cpython-39.pyc
+src/__pycache__/matching.cpython-310.pyc
+src/__pycache__/matching.cpython-38.pyc
+src/__pycache__/parsing.cpython-310.pyc
+src/__pycache__/parsing.cpython-38.pyc
+src/__pycache__/request_api.cpython-310.pyc
+src/__pycache__/request_api.cpython-38.pyc
+src/__pycache__/result_templates.cpython-310.pyc
+src/__pycache__/result_templates.cpython-38.pyc
