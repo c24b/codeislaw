@@ -9,10 +9,13 @@ Load document with the accepted extensions and transform into list of text
 """
 
 import os
+from io import StringIO
 import docx
 from PyPDF2 import PdfReader
+from pdfreader import SimplePDFViewer
 from odf import text, teletype
 from odf.opendocument import load
+from docx.enum.style import WD_STYLE_TYPE
 
 
 ACCEPTED_EXTENSIONS = ("odt", "pdf", "docx", "doc")
@@ -32,7 +35,35 @@ def get_styles(doc):
             style[n.qname[1] + "/" + k[1]]= n.attributes[k]
     return styles
 
-def parse_doc(file_path: str) -> list:
+def parse_pdf(file_path: str) -> list:
+    full_text = []
+    with open(file_path, "rb") as f:
+        reader = PdfReader(f)
+        for i in range(len(reader.pages)):
+            page = reader.pages[i]
+            full_text.extend((page.extract_text()).split("\n"))
+        return full_text
+
+def parse_odt(file_path: str) -> list:
+    full_text = []
+    with open(file_path, "rb") as f:
+        document = load(f)
+        paragraphs = document.getElementsByType(text.P)
+        for i in range(len(paragraphs)):
+            full_text.append((teletype.extractText(paragraphs[i])))
+        return full_text
+def parse_docx(file_path:str) -> list:
+    full_text = []
+    with open(file_path, "rb") as f:
+        document = docx.Document(f)
+        paragraphs = document.paragraphs   
+        for i in range(len(paragraphs)):
+            #not usefull can't detect style properly
+            if paragraphs[i].style.name == "Normal":
+                full_text.append((paragraphs[i].text))
+        return full_text
+
+def parse_doc(file_path: str) -> str:
     """
     Parcourir le document pour en extraire le texte
     Arguments
@@ -53,32 +84,30 @@ def parse_doc(file_path: str) -> list:
 
     doc_name, doc_ext = file_path.split("/")[-1].split(".")
     if doc_ext not in ACCEPTED_EXTENSIONS:
+        os.remove(file_path)
         raise ValueError(
             "Extension incorrecte: les fichiers acceptés terminent par *.odt, *.docx, *.doc,  *.pdf"
         )
-
-    full_text = []
+        
     if doc_ext == "pdf":
-        with open(file_path, "rb") as f:
-            reader = PdfReader(f)
-
-            for i in range(len(reader.pages)):
-                page = reader.pages[i]
-                full_text.extend((page.extract_text()).split("\n"))
-
+        full_text = parse_pdf(file_path)    
+    
     elif doc_ext == "odt":
-        with open(file_path, "rb") as f:
-            document = load(f)
-            paragraphs = document.getElementsByType(text.P)
-            for i in range(len(paragraphs)):
-                full_text.append((teletype.extractText(paragraphs[i])))
+        full_text = parse_odt(file_path)
+    
     else:
-        # if doc_ext in ["docx", "doc"]:
-        with open(file_path, "rb") as f:
-            document = docx.Document(f)
-            paragraphs = document.paragraphs
-            for i in range(len(paragraphs)):
-                full_text.append((paragraphs[i].text))
-    full_text = [n for n in full_text if n not in ["\n", "", " "]]
+        try:
+            full_text = parse_docx(file_path)
+        except Exception as e:
+            if e == "File is not a zip file":
+                try:
+                    full_text = parse_odt(file_path)
+                except Exception as e:
+                    os.remove(file_path)
+                    raise Exception("Le format du document est incorrect: impossible de lire le contenu")
+            else:
+                os.remove(file_path)
+                raise Exception("Le format du document est incorrect: impossible de lire son contenu")
     os.remove(file_path)
-    return " ".join(full_text)
+    return " ".join([n for n in full_text if n not in [" ", "", None] and len(n) > 3])
+    
