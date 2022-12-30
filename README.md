@@ -40,7 +40,7 @@ Pour tester le programme en local, il vous faudra ouvrir un compte sur PISTE: po
 ### Ajouter des codes non supportés
 
 Un code dont vous avez l'usage n'est pas présent dans la liste? 
-Proposez nous son [ajout](https://github.com/c24b/codeislow/issues/new?assignees=c24b&labels=enhancement&template=ajout-d-un-nouveau-code.md&title=%5BNEW_CODE%5D)
+Proposez nous son [ajout](https://github.com/c24b/codeislow/issues/new?assignees=c24b&labels=enhancement&template=ajout-d-un-nouveau-code.md&title=%5BNEW_CODE%5D)!
 
 ### Améliorer la détection d'un article
 
@@ -48,7 +48,7 @@ Une référence à un article n'est pas correctement detectée? Donnez nous les 
 
 ### Signaler un bug
 
-Vous avez lancé une analyse et le résultat ne vous satisfait pas? Dites nous ce qui s'est mal passé en nous décrivant le [problème](https://github.com/c24b/codeislow/issues/new?assignees=c24b&labels=bug&template=failed-detection.md&title=%5BFAIL%5D) 
+Vous avez lancé une analyse et le résultat ne vous satisfait pas? Dites nous ce qui s'est mal passé en nous décrivant le [problème](https://github.com/c24b/codeislow/issues/new?assignees=c24b&labels=bug&template=failed-detection.md&title=%5BFAIL%5D).
 ### Proposer une amélioration
 
 Vous avez des suggestions d'amélioration? Envoyez nous une [feature request](https://github.com/c24b/codeislow/issues/new)
@@ -57,10 +57,10 @@ Eventuellement, vous pouvez faire une pull-request après vous être assurés qu
 
 ## Installer en local
 
-Les instructions complètes pour l'installation en local sur votre ordinateur sont disponibles [ici](INSTALL.md)
+Les instructions complètes pour l'installation en local sur votre ordinateur sont disponibles [ici](INSTALL.md).
 ## Déployer sur un serveur
 
-Les instructions complètes pour déployer sur un serveur sont disponibles [ici](DEPLOY.md)
+Les instructions complètes pour déployer sur un serveur sont disponibles [ici](DEPLOY.md).
 ## Architecture
 
  
