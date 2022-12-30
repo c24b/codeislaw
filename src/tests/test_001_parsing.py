@@ -4,7 +4,7 @@ import os
 import shutil
 import pytest
 from .context import parsing
-from parsing import ACCEPTED_EXTENSIONS, parse_doc
+from parsing import simple_cleaning, parse_doc, parse_docx
 
 
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -37,9 +37,7 @@ class TestFileParsing:
         """testing accepted extensions"""
         with pytest.raises(ValueError) as e:
             abspath = os.path.join(DOC_DIR, input)
-            archive_test_file(abspath)
             parse_doc(abspath)
-            restore_test_file(abspath)
             assert (
                 e
                 == "Extension incorrecte: les fichiers acceptés terminent par *.odt, *.docx, *.doc,  *.pdf"
@@ -62,7 +60,7 @@ class TestFileParsing:
         restore_test_file(abspath)
         doc_name, doc_ext = abspath.split("/")[-1].split(".")
         assert doc_ext == "pdf"
-        assert len(full_text) > 20, len(full_text)
+        assert len(full_text) > 0, len(full_text)
         assert isinstance(full_text, str), type(full_text)
         assert any("article" in _x for _x in full_text.split(" ")) is True, full_text[:2000]
         assert any("Code" in _x for _x in full_text.split(" ")) is True, full_text[:2000]
@@ -76,21 +74,21 @@ class TestFileParsing:
         restore_test_file(abspath)
         doc_name, doc_ext = abspath.split("/")[-1].split(".")
         assert doc_ext == "odt", (doc_ext, abspath)
-        assert len(full_text) > 20
+        assert len(full_text) > 0, full_text
         assert any("article" in _x for _x in full_text.split(" ")) is True, full_text[:2000]
         assert any("Code" in _x for _x in full_text.split(" ")) is True, full_text[:2000]
 
     @pytest.mark.parametrize("file_path",["newtest.docx", "testnew.docx"])
     def test_docx(self, file_path):
-            abspath = os.path.join(DOC_DIR, file_path)
-            archive_test_file(abspath)
-            full_text = parse_doc(abspath)
-            restore_test_file(abspath)
-            doc_name, doc_ext = abspath.split("/")[-1].split(".")
-            assert doc_ext == "docx" or doc_ext=="doc", (doc_ext, abspath)
-            assert len(full_text) > 20, full_text
-            assert any("article" in _x for _x in full_text.split(" ")) is True, full_text[:2000]
-            assert any("Code" in _x for _x in full_text.split(" ")) is True, full_text[:2000]
+        abspath = os.path.join(DOC_DIR, file_path)
+        archive_test_file(abspath)
+        full_text = parse_doc(abspath)
+        restore_test_file(abspath)
+        doc_name, doc_ext = abspath.split("/")[-1].split(".")
+        assert doc_ext == "docx" or doc_ext=="doc", (doc_ext, abspath)
+        assert len(full_text) > 0, full_text
+        assert any("article" in _x for _x in full_text.split(" ")) is True, full_text[:2000]
+        assert any("Code" in _x for _x in full_text.split(" ")) is True, full_text[:2000]
     
     @pytest.mark.parametrize("input", ["HDR.docx", "HDR.doc"])
     def test_wrong_docx(self, input):
@@ -100,54 +98,17 @@ class TestFileParsing:
             parse_doc(file_path)
             assert e == "Le format du document est incorrect: impossible de lire le contenu", e
     
-    # def test_content(self):
-    #     """test content text"""
-    #     file_paths = ["newtest.docx", "newtest.pdf", "testnew.odt"]
-    #     for file_path in file_paths:
-    #         abspath = os.path.join(DOC_DIR, file_path)
-    #         # as file is removed during parse_doc
-    #         # archive it
-    #         archive_test_file(abspath)
-    #         full_text = parse_doc(abspath)
-    #         # and restore it
-    #         restore_test_file(abspath)
-    #         doc_name, doc_ext = abspath.split("/")[-1].split(".")
-    #         assert doc_name == "newtest" or doc_name == "testnew"
-    #         if abspath.endswith(".pdf"):
-    #             assert len(full_text) == 23, (len(full_text), abspath)
-    #         else:
-    #             assert len(full_text) == 22, (len(full_text), abspath)
-    
-    # def test_reversed_pattern_content(self):
-    #     """test content text"""
-    #     file_paths = ["testnew.pdf", "testnew.odt"]
-    #     for file_path in file_paths:
-    #         abspath = os.path.join(
-    #             DOC_DIR, file_path
-    #         )
-            
-    #         archive_test_file(abspath)
-    #         full_text = parse_doc(abspath)
-    #         restore_test_file(abspath)
-    #         doc_name, doc_ext = abspath.split("/")[-1].split(".")
-    #         assert doc_name == "newtest" or doc_name == "testnew"
-    #         if abspath.endswith(".pdf"):
-    #             assert len(full_text) == 24, (len(full_text), abspath)
-    #         else:
-    #             assert len(full_text) == 22, (len(full_text), abspath)
-    #         assert any("art." in _x for _x in full_text) is True
-    #         assert any("Art." in _x for _x in full_text) is True
-    #         assert any("Code" in _x for _x in full_text) is True
-
-    # def test_HDR_document(self):
-    #     file_path = "HDR_NETTER_V1_07.odt"
-    #     abspath = os.path.join(DOC_DIR, file_path)
-    #     archive_test_file(abspath)
-    #     full_text = parse_doc(abspath)
-    #     restore_test_file(abspath)
-    #     doc_name, doc_ext = abspath.split("/")[-1].split(".")
-    #     assert doc_ext == "odt", doc_ext
-    #     assert len(full_text) == 3589, (len(full_text), abspath)
-    #     assert any("art." in _x for _x in full_text) is True
-    #     assert any("Art." in _x for _x in full_text) is True
-    #     assert any("Code" in _x for _x in full_text) is True
+    @pytest.mark.parametrize("filename",["newtest.docx", "testnew.docx"])
+    def test_simple_cleaning(self, filename):
+        abspath = os.path.join(DOC_DIR, filename)
+        archive_test_file(abspath)
+        full_text = parse_docx(abspath)
+        restore_test_file(abspath)
+        words = []
+        for n in full_text:
+            words.extend(n.split(" "))
+        assert isinstance(full_text, list)
+        clean_str = simple_cleaning(full_text)
+        assert isinstance(clean_str, str)
+        clean_words = clean_str.split(" ")
+        assert len(clean_words) < len(words), [n for n in zip(words, clean_words)] 

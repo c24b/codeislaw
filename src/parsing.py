@@ -63,6 +63,9 @@ def parse_docx(file_path:str) -> list:
                 full_text.append((paragraphs[i].text))
         return full_text
 
+def simple_cleaning(full_text:list) -> str:
+    return " ".join([n for n in full_text if n not in [" ", "", "\n", None] and not n.isdigit()])
+
 def parse_doc(file_path: str) -> str:
     """
     Parcourir le document pour en extraire le texte
@@ -84,30 +87,36 @@ def parse_doc(file_path: str) -> str:
 
     doc_name, doc_ext = file_path.split("/")[-1].split(".")
     if doc_ext not in ACCEPTED_EXTENSIONS:
-        os.remove(file_path)
         raise ValueError(
             "Extension incorrecte: les fichiers acceptés terminent par *.odt, *.docx, *.doc,  *.pdf"
         )
         
     if doc_ext == "pdf":
         full_text = parse_pdf(file_path)    
+        os.remove(file_path)
+        return simple_cleaning(full_text)
     
     elif doc_ext == "odt":
         full_text = parse_odt(file_path)
+        os.remove(file_path)
+        return simple_cleaning(full_text)
     
     else:
         try:
             full_text = parse_docx(file_path)
+            os.remove(file_path)
+            return simple_cleaning(full_text)
         except Exception as e:
             if e == "File is not a zip file":
                 try:
                     full_text = parse_odt(file_path)
+                    os.remove(file_path)
+                    return simple_cleaning(full_text)
+    
                 except Exception as e:
                     os.remove(file_path)
                     raise Exception("Le format du document est incorrect: impossible de lire le contenu")
             else:
                 os.remove(file_path)
                 raise Exception("Le format du document est incorrect: impossible de lire son contenu")
-    os.remove(file_path)
-    return " ".join([n for n in full_text if n not in [" ", "", None] and len(n) > 3])
     
