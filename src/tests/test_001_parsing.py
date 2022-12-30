@@ -94,8 +94,10 @@ class TestFileParsing:
     def test_wrong_docx(self, input):
         """testing FileNotFound Error"""
         file_path = os.path.join(DOC_DIR, input)
+        archive_test_file(abspath)
         with pytest.raises(Exception) as e:
             parse_doc(file_path)
+            restore_test_file(file_path)
             assert e == "Le format du document est incorrect: impossible de lire le contenu", e
     
     @pytest.mark.parametrize("filename",["newtest.docx", "testnew.docx"])
